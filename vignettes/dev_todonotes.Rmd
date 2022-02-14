@@ -1,0 +1,122 @@
+---
+title: "dev_todonotes"
+author: "Maxime Jaunatre"
+output: 
+  pdf_document: 
+    pandoc_args: ["--lua-filter=color-text.lua"]
+    keep_tex: true
+  html_document: 
+    pandoc_args: ["--lua-filter=color-text.lua"]
+vignette: >
+  %\VignetteIndexEntry{dev_todonotes}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Objectif : add todonotes in html and pdf.
+
+```{r setup}
+devtools::load_all()
+library(todormd)
+```
+
+## Explorativ work
+
+### Using lua filters
+
+First, we define a Lua filter and write it to
+the file `color-text.lua`.
+
+```{cat, engine.opts = list(file = "color-text.lua")}
+Span = function(el)
+  color = el.attributes['color']
+  -- if no color attribute, return unchange
+  if color == nil then return el end
+  
+  -- transform to <span style="color: red;"></span>
+  if FORMAT:match 'html' then
+    -- remove color attributes
+    el.attributes['color'] = nil
+    -- use style attribute instead
+    el.attributes['style'] = 'color: ' .. color .. ';'
+    -- return full span element
+    return el
+  elseif FORMAT:match 'latex' then
+    -- remove color attributes
+    el.attributes['color'] = nil
+    -- encapsulate in latex code
+    table.insert(
+      el.content, 1,
+      pandoc.RawInline('latex', '\\textcolor{'..color..'}{')
+    )
+    table.insert(
+      el.content,
+      pandoc.RawInline('latex', '}')
+    )
+    -- returns only span content
+    return el.content
+  else
+    -- for other format return unchanged
+    return el
+  end
+end
+```
+
+Now we can test the filter with some text in brackets with
+the `color` attribute, e.g.,
+
+> Roses are [red and **bold**]{color="red"} and
+> violets are [blue]{color="blue"}.
+
+### R functions
+
+```{r}
+colorize <- function(x, color) {
+  if (knitr::is_latex_output()) {
+    sprintf("\\textcolor{%s}{%s}", color, x)
+  } else if (knitr::is_html_output()) {
+    sprintf("<span style='color: %s;'>%s</span>", color,
+      x)
+  } else x
+}
+```
+
+We can then use the code in an inline R expression like `` `r knitr::inline_expr('colorize("some words in red", "red")')` `` which give `r colorize("some words in red", "red")`
+
+
+### Custom blocs
+
+:::: {.center data-latex=""}
+
+::: {.minipage data-latex="{.5\linewidth}"}
+This paragraph will be centered on the page, and
+its width is 50% of the width of its parent element.
+:::
+
+::::
+
+
+### pandoc options
+
+les notes ont l'air d'être une très bonne option a condition de modifier la classe en html...
+
+::: notes
+
+This is my note.
+
+- It can contain Markdown
+- like this list
+
+:::
+
+Here is an inline note.^[Inlines notes are easier to write, since
+you don't have to pick an identifier and move down to type the
+note.]
+ does this work or is in footnotes
