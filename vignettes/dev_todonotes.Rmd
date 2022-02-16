@@ -3,14 +3,17 @@ title: "dev_todonotes"
 author: "Maxime Jaunatre"
 output: 
   pdf_document: 
-    pandoc_args: ["--lua-filter=color-text.lua"]
+    # pandoc_args: ["--lua-filter=color-text.lua"] # option
     keep_tex: true
   html_document: 
-    pandoc_args: ["--lua-filter=color-text.lua"]
+    # pandoc_args: ["--lua-filter=color-text.lua"] # option
 vignette: >
   %\VignetteIndexEntry{dev_todonotes}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
 
 ```{r, include = FALSE}
@@ -23,7 +26,6 @@ knitr::opts_chunk$set(
 Objectif : add todonotes in html and pdf.
 
 ```{r setup}
-devtools::load_all()
 library(todormd)
 ```
 
@@ -31,8 +33,7 @@ library(todormd)
 
 ### Using lua filters
 
-First, we define a Lua filter and write it to
-the file `color-text.lua`.
+First, we define a Lua filter and write it to the file `color-text.lua`.
 
 ```{cat, engine.opts = list(file = "color-text.lua")}
 Span = function(el)
@@ -69,11 +70,11 @@ Span = function(el)
 end
 ```
 
-Now we can test the filter with some text in brackets with
-the `color` attribute, e.g.,
+Now we can test the filter with some text in brackets with the `color`
+attribute, e.g.,
 
-> Roses are [red and **bold**]{color="red"} and
-> violets are [blue]{color="blue"}.
+> Roses are [red and **bold**]{color="red"} and violets are
+> [blue]{color="blue"}.
 
 ### R functions
 
@@ -88,35 +89,59 @@ colorize <- function(x, color) {
 }
 ```
 
-We can then use the code in an inline R expression like `` `r knitr::inline_expr('colorize("some words in red", "red")')` `` which give `r colorize("some words in red", "red")`
-
+We can then use the code in an inline R expression like
+`` `r knitr::inline_expr('colorize("some words in red", "red")')` ``
+which give `r colorize("some words in red", "red")`
 
 ### Custom blocs
 
-:::: {.center data-latex=""}
-
-::: {.minipage data-latex="{.5\linewidth}"}
-This paragraph will be centered on the page, and
-its width is 50% of the width of its parent element.
+::: {.center data-latex=""}
+::: {.minipage data-latex="{.5\\linewidth}"}
+This paragraph will be centered on the page, and its width is 50% of the
+width of its parent element.
 :::
-
-::::
-
+:::
 
 ### pandoc options
 
-les notes ont l'air d'être une très bonne option a condition de modifier la classe en html...
+les notes ont l'air d'être une très bonne option a condition de modifier
+la classe en html...
 
-::: notes
-
+::: {.notes}
 This is my note.
 
-- It can contain Markdown
-- like this list
-
+-   It can contain Markdown
+-   like this list
 :::
 
-Here is an inline note.^[Inlines notes are easier to write, since
-you don't have to pick an identifier and move down to type the
-note.]
- does this work or is in footnotes
+Here is an inline note.[^1] does this work or is in footnotes
+
+[^1]: Inlines notes are easier to write, since you don't have to pick an
+    identifier and move down to type the note.
+
+## Objectives
+
+### HTML
+
+Not depending on css example :
+
+::: {#hello style="padding: 2px 2px 2px 2px;  border: 2px solid black;  background: orange;  border-radius: 10px;"}
+hey there *italic* **bold**
+:::
+
+### PDF
+
+Issue with LaTeX is that it require modification of the yaml. Possible
+to draw directly with tikz and cp some todonotes.sty parts, but still
+require to load latex packages. Also, md syntax is not possible inside
+direct latex command.
+
+before \todo[inline]{Include the actual content here. *italic* **bold**}
+it works
+
+## Pistes
+
+We can add lua filter with with .onload function, see
+[rmdfiltr](https://github.com/crsh/rmdfiltr).
+
+Using pandoc syntax may be easier if there is other format inside the todonotes.

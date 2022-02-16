@@ -1,2 +1,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+
+.github
+LICENCE-CECILL-2.1.txt
+README.Rmd

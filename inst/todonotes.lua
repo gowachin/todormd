@@ -1,0 +1,3 @@
+--[[
+  Style todonotes in rmarkdown.
+]]
