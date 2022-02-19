@@ -1,11 +1,11 @@
 ---
-title: "Using todormd package"
+title: "Using {todormd} package"
 author: "Maxime Jaunatre"
 output: 
   html_document:
   pdf_document:
 vignette: >
-  %\VignetteIndexEntry{Using todormd package}
+  %\VignetteIndexEntry{Using {todormd} package}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 ---
@@ -37,9 +37,9 @@ It appear nicely in the text with a bright orange color by default.
 The objective is to add many more options to a todonotes.
 
 ```
-`r knitr::inline_expr('todo("here I need something more visible so it is red", color="red")')` 
+`r knitr::inline_expr('todo("here I need something more visible so it\'s red", color="red")')` 
 ```
-`r todo("here I need something more visible so it is red", color="red")`
+`r todo("here I need something more visible so it's red", color="red")`
 
 You can also use very long todonotes like below :
 
@@ -66,6 +66,13 @@ As the text is parsed with rmarkdown, styling works too.
 `r knitr::inline_expr('todo("this is *italic*, **bold** and ***both***")')` 
 ```
 `r todo("this is *italic*, **bold** and ***both***")`
+
+
+Because you need to provide a string element, don't forget to escape the `"` characters.
+```
+`r knitr::inline_expr('todo("I need to identify \\\"someone\\\" in here.")')`
+```
+`r todo("I need to identify \"someone\" in here.")`
 
 
 

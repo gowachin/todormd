@@ -58,6 +58,25 @@ devtools::install_github('https://github.com/gowachin/todormd')
 remotes::install_github("gowachin/todormd")
 ```
 
+## Usage
+
+To add todonotes in a markdown, you need to add a chunk where you load the package (it can be hidden with `echo = FALSE` option).
+
+```{r setup}
+library(todormd)
+```
+
+Then in the document you need to add inline code calling the `todo()` function like below.
+
+```
+`r knitr::inline_expr('todo("For example this is a quick note")')` 
+```
+`r todo("For example this is a quick note")`
+
+<br>
+
+Read [Using {todormd} package](https://gowachin.github.io/todormd/articles/dev_todonotes.html) Vignette to learn more about the function options.
+
 
 ## Want to help ?
 
