@@ -36,6 +36,7 @@ jobs:
         run: |
           install.packages(c("remotes"))
           remotes::install_deps(dependencies = FALSE)
+          remotes::install_cran("testthat")
           remotes::install_cran("covr")
         shell: Rscript {0}
 
