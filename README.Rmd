@@ -24,6 +24,7 @@ library(badger)
 <!-- [![R build status](https://github.com/gowachin/todormd/workflows/R-CMD-check/badge.svg)](https://github.com/gowachin/todormd/actions)  -->
 <!-- [![Coverage status](https://codecov.io/gh/gowachin/todormd/branch/master/graph/badge.svg)](https://codecov.io/github/gowachin/todormd?branch=master) -->
 
+[![R-CMD-check](https://github.com/gowachin/todormd/workflows/R-CMD-check/badge.svg)](https://github.com/gowachin/todormd/actions)
 <!-- badges: end -->
 
 I don't know how I'll do this but this could be neat. I'll need some stuff from this book to understand how to do this.
