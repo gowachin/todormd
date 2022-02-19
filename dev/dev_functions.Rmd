@@ -2,11 +2,11 @@
 title: "dev_todonotes"
 author: "Maxime Jaunatre"
 output: 
-  pdf_document:
-    # pandoc_args: ['--lua-filter=color-text.lua'] # option
-    # pandoc_args: !expr todormd::add_todo_filter() # is it better ? meh...
   html_document:
-    # pandoc_args: ['--lua-filter=color-text.lua'] # option
+    pandoc_args: ['--lua-filter=color-text.lua'] # option
+    # pandoc_args: !expr todormd::add_todo_filter() # is it better ? meh...
+  pdf_document:
+    pandoc_args: ['--lua-filter=color-text.lua'] # option
     # pandoc_args: !expr todormd::add_todo_filter() # is it better ? meh...
 vignette: >
   %\VignetteIndexEntry{dev_todonotes}
@@ -136,7 +136,7 @@ to draw directly with tikz and cp some todonotes.sty parts, but still
 require to load latex packages. Also, md syntax is not possible inside
 direct latex command.
 
-<!-- before \todo[inline]{Include the actual content here. *italic* **bold**} -->
+before \todo[inline]{Include the actual content here. *italic* **bold**}
 it works
 
 ## Pistes

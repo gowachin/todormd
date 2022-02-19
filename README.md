@@ -8,8 +8,9 @@
 
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
-[![](https://img.shields.io/badge/devel%20version-0.1.0-blue.svg)](https://github.com/gowachin/DiveR)
-<!-- [![R build status](https://github.com/gowachin/todormd/workflows/R-CMD-check/badge.svg)](https://github.com/gowachin/todormd/actions)  -->
+[![](https://img.shields.io/badge/devel%20version-0.1.0-blue.svg)](https://github.com/gowachin/todormd)
+[![R build
+status](https://github.com/gowachin/todormd/workflows/R-CMD-check/badge.svg)](https://github.com/gowachin/todormd/actions)
 <!-- [![Coverage status](https://codecov.io/gh/gowachin/todormd/branch/master/graph/badge.svg)](https://codecov.io/github/gowachin/todormd?branch=master) -->
 
 <!-- badges: end -->
