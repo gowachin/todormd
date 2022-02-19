@@ -1,19 +1,13 @@
 ---
-title: "dev_todonotes"
+title: "Using todormd package"
 author: "Maxime Jaunatre"
 output: 
-  pdf_document: 
-    # pandoc_args: ["--lua-filter=color-text.lua"] # option
-    keep_tex: true
-  html_document: 
-    # pandoc_args: ["--lua-filter=color-text.lua"] # option
+  html_document:
+  pdf_document:
 vignette: >
-  %\VignetteIndexEntry{dev_todonotes}
+  %\VignetteIndexEntry{Using todormd package}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
-editor_options: 
-  markdown: 
-    wrap: 72
 ---
 
 ```{r, include = FALSE}
@@ -23,125 +17,55 @@ knitr::opts_chunk$set(
 )
 ```
 
-Objectif : add todonotes in html and pdf.
+This package provide a simple function for adding todonotes inside a Rmarkdown document.
+To use the package you need to load it.
 
 ```{r setup}
 library(todormd)
 ```
 
-## Explorativ work
+## Todonotes syntax
 
-### Using lua filters
+Todonotes are added with an R function `todo()` which accept a text and a color option.
 
-First, we define a Lua filter and write it to the file `color-text.lua`.
-
-```{cat, engine.opts = list(file = "color-text.lua")}
-Span = function(el)
-  color = el.attributes['color']
-  -- if no color attribute, return unchange
-  if color == nil then return el end
-  
-  -- transform to <span style="color: red;"></span>
-  if FORMAT:match 'html' then
-    -- remove color attributes
-    el.attributes['color'] = nil
-    -- use style attribute instead
-    el.attributes['style'] = 'color: ' .. color .. ';'
-    -- return full span element
-    return el
-  elseif FORMAT:match 'latex' then
-    -- remove color attributes
-    el.attributes['color'] = nil
-    -- encapsulate in latex code
-    table.insert(
-      el.content, 1,
-      pandoc.RawInline('latex', '\\textcolor{'..color..'}{')
-    )
-    table.insert(
-      el.content,
-      pandoc.RawInline('latex', '}')
-    )
-    -- returns only span content
-    return el.content
-  else
-    -- for other format return unchanged
-    return el
-  end
-end
 ```
-
-Now we can test the filter with some text in brackets with the `color`
-attribute, e.g.,
-
-> Roses are [red and **bold**]{color="red"} and violets are
-> [blue]{color="blue"}.
-
-### R functions
-
-```{r}
-colorize <- function(x, color) {
-  if (knitr::is_latex_output()) {
-    sprintf("\\textcolor{%s}{%s}", color, x)
-  } else if (knitr::is_html_output()) {
-    sprintf("<span style='color: %s;'>%s</span>", color,
-      x)
-  } else x
-}
+`r knitr::inline_expr('todo("For example this is a quick note")')` 
 ```
+`r todo("For example this is a quick note")`
+It appear nicely in the text with a bright orange color by default.
 
-We can then use the code in an inline R expression like
-`` `r knitr::inline_expr('colorize("some words in red", "red")')` ``
-which give `r colorize("some words in red", "red")`
+The objective is to add many more options to a todonotes.
 
-### Custom blocs
+```
+`r knitr::inline_expr('todo("here I need something more visible so it is red", color="red")')` 
+```
+`r todo("here I need something more visible so it is red", color="red")`
 
-::: {.center data-latex=""}
-::: {.minipage data-latex="{.5\\linewidth}"}
-This paragraph will be centered on the page, and its width is 50% of the
-width of its parent element.
-:::
-:::
+You can also use very long todonotes like below :
 
-### pandoc options
+```
+`r knitr::inline_expr('todo("Lorem ipsum dolor sit amet, consectetur 
+adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore 
+magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco 
+laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor 
+in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla 
+pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa 
+qui officia deserunt mollit anim id est laborum.", color = "grey")')` 
+```
+`r todo("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed 
+do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim 
+ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip 
+ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate 
+velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat 
+cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id 
+est laborum.", color = "gray")`
 
-les notes ont l'air d'être une très bonne option a condition de modifier
-la classe en html...
+As the text is parsed with rmarkdown, styling works too.
 
-::: {.notes}
-This is my note.
+```
+`r knitr::inline_expr('todo("this is *italic*, **bold** and ***both***")')` 
+```
+`r todo("this is *italic*, **bold** and ***both***")`
 
--   It can contain Markdown
--   like this list
-:::
 
-Here is an inline note.[^1] does this work or is in footnotes
 
-[^1]: Inlines notes are easier to write, since you don't have to pick an
-    identifier and move down to type the note.
-
-## Objectives
-
-### HTML
-
-Not depending on css example :
-
-::: {#hello style="padding: 2px 2px 2px 2px;  border: 2px solid black;  background: orange;  border-radius: 10px;"}
-hey there *italic* **bold**
-:::
-
-### PDF
-
-Issue with LaTeX is that it require modification of the yaml. Possible
-to draw directly with tikz and cp some todonotes.sty parts, but still
-require to load latex packages. Also, md syntax is not possible inside
-direct latex command.
-
-before \todo[inline]{Include the actual content here. *italic* **bold**}
-it works
-
-## Pistes
-
-We can add lua filter with with .onload function, see
-[rmdfiltr](https://github.com/crsh/rmdfiltr).
-
-Using pandoc syntax may be easier if there is other format inside the todonotes.

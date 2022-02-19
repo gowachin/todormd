@@ -1,11 +1,8 @@
---[[
-  Style todonotes in rmarkdown.
-]]
 Span = function(el)
   color = el.attributes['color']
   -- if no color attribute, return unchange
   if color == nil then return el end
-
+  
   -- transform to <span style="color: red;"></span>
   if FORMAT:match 'html' then
     -- remove color attributes

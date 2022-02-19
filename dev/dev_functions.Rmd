@@ -1,0 +1,216 @@
+---
+title: "dev_todonotes"
+author: "Maxime Jaunatre"
+output: 
+  pdf_document:
+    # pandoc_args: ['--lua-filter=color-text.lua'] # option
+    # pandoc_args: !expr todormd::add_todo_filter() # is it better ? meh...
+  html_document:
+    # pandoc_args: ['--lua-filter=color-text.lua'] # option
+    # pandoc_args: !expr todormd::add_todo_filter() # is it better ? meh...
+vignette: >
+  %\VignetteIndexEntry{dev_todonotes}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Objectif : add todonotes in html and pdf.
+
+```{r setup}
+# print(knitr::knit_meta())
+library(todormd)
+# usepackage_latex("todonotes") # il y a un conflict si je rajoute des pandoc_args...
+```
+
+## Explorative work
+
+### Using lua filters
+
+First, we define a Lua filter and write it to the file `color-text.lua`.
+
+```{cat, engine.opts = list(file = "color-text.lua")}
+Span = function(el)
+  color = el.attributes['color']
+  -- if no color attribute, return unchange
+  if color == nil then return el end
+  
+  -- transform to <span style="color: red;"></span>
+  if FORMAT:match 'html' then
+    -- remove color attributes
+    el.attributes['color'] = nil
+    -- use style attribute instead
+    el.attributes['style'] = 'color: ' .. color .. ';'
+    -- return full span element
+    return el
+  elseif FORMAT:match 'latex' then
+    -- remove color attributes
+    el.attributes['color'] = nil
+    -- encapsulate in latex code
+    table.insert(
+      el.content, 1,
+      pandoc.RawInline('latex', '\\textcolor{'..color..'}{')
+    )
+    table.insert(
+      el.content,
+      pandoc.RawInline('latex', '}')
+    )
+    -- returns only span content
+    return el.content
+  else
+    -- for other format return unchanged
+    return el
+  end
+end
+```
+
+Now we can test the filter with some text in brackets with the `color`
+attribute, e.g.,
+
+> Roses are [red and **bold**]{color="red"} and violets are
+> [blue]{color="blue"}.
+
+### R functions
+
+```{r}
+colorize <- function(x, color) {
+  if (knitr::is_latex_output()) {
+    sprintf("\\textcolor{%s}{%s}", color, x)
+  } else if (knitr::is_html_output()) {
+    sprintf("<span style='color: %s;'>%s</span>", color,
+      x)
+  } else x
+}
+```
+
+We can then use the code in an inline R expression like
+`` `r knitr::inline_expr('colorize("some words in red", "red")')` ``
+which give `r colorize("some words in red", "red")`
+
+### Custom blocs
+
+::: {.center data-latex=""}
+::: {.minipage data-latex="{.5\\linewidth}"}
+This paragraph will be centered on the page, and its width is 50% of the
+width of its parent element.
+:::
+:::
+
+### pandoc options
+
+les notes ont l'air d'être une très bonne option a condition de modifier
+la classe en html...
+
+::: {.notes}
+This is my note.
+
+-   It can contain Markdown
+-   like this list
+:::
+
+Here is an inline note.[^1] does this work or is in footnotes
+
+[^1]: Inlines notes are easier to write, since you don't have to pick an
+    identifier and move down to type the note.
+
+## Objectives
+
+### HTML
+
+Not depending on css example :
+
+::: {#hello style="padding: 2px 2px 2px 2px;  border: 2px solid black;  background: orange;  border-radius: 10px;"}
+hey there *italic* **bold**
+:::
+
+### PDF
+
+Issue with LaTeX is that it require modification of the yaml. Possible
+to draw directly with tikz and cp some todonotes.sty parts, but still
+require to load latex packages. Also, md syntax is not possible inside
+direct latex command.
+
+<!-- before \todo[inline]{Include the actual content here. *italic* **bold**} -->
+it works
+
+## Pistes
+
+We can maybe add lua filter with with .onload function, see
+[rmdfiltr](https://github.com/crsh/rmdfiltr).
+
+Using pandoc syntax may be easier if there is other format inside the todonotes.
+
+
+## Function test
+
+### R way
+
+```{r define_todo, echo = FALSE}
+#' Add a todonotes to a Rmarkdown
+#' @param x text to be included in the todo.
+#' This text is modified with rmarkdown render for latex output and with
+#' custom code for html output.
+#' @param color orange by default, this is the color background of the todonote.
+#' 
+#' @details
+#' For now, the package is based on the \code{todonotes} package in latex, 
+#' but only use the inlince option. Works will be done to include 
+#' \code{listoftodo} and a greater variety of todonotes.
+#'
+#' @author Maxime Jaunatre
+#'
+#' @export
+todo <- function(x = "", color = "orange") {
+  if (knitr::is_latex_output()) {
+    
+    # this is from stackoverflow
+    # https://stackoverflow.com/questions/59123976/how-to-use-r-to-convert-character-from-markdown-to-latex
+    
+    infile <- tempfile(fileext=".md")
+    writeLines(x, infile)
+    outfile <- rmarkdown::render(infile, rmarkdown::latex_fragment(), quiet = TRUE)
+    x <- readLines(outfile, encoding  = "Latin-1")
+    x  <- paste(x, collapse = " ")
+    unlink(c(infile, outfile))
+
+    sprintf("\\todo[inline,color=%s]{%s}", color, x)
+    
+  } else if (knitr::is_html_output()) {
+    
+    sprintf(
+      paste(
+        '<div id="hello" style=', 
+        '  "padding: 2px 2px 2px 2px;  border: 2px solid black;',
+        '  background: %s;  border-radius: 10px;">',
+        '  <p> %s </p>',
+        '</div>'
+      ), 
+      color,  x
+    )
+    
+  } else x
+}
+```
+
+This is an inline TODO 
+`r todo("this is a basic todonotes and it work nicely")`
+It appear nicely in the text
+
+I change the color and test multiple lines.
+`r todo("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.", color = "red")`
+which also works.
+
+I test some styling too...this work but use a tmp file for rendering.
+`r todo("this is *italic*, **bold** and ***both***")`
+
+
+### Pandoc way
+
+This require to modify the yaml by calling the lua in the package...could be nice to find a way to modify the yaml the way we do with latex packages.
+
