@@ -22,13 +22,11 @@ library(badger)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental) 
 `r badge_devel("gowachin/todormd", "blue")` 
 [![R build status](https://github.com/gowachin/todormd/workflows/R-CMD-check/badge.svg)](https://github.com/gowachin/todormd/actions)
-<!-- [![Coverage status](https://codecov.io/gh/gowachin/todormd/branch/master/graph/badge.svg)](https://codecov.io/github/gowachin/todormd?branch=master) -->
+[![Coverage status](https://codecov.io/gh/gowachin/todormd/branch/master/graph/badge.svg)](https://codecov.io/github/gowachin/todormd?branch=master)
 
 <!-- badges: end -->
 
-I don't know how I'll do this but this could be neat. I'll need some stuff from this book to understand how to do this.
-
-Final objective is to code todonotes like in the latex package.
+This package allow you to add todonotes based on the latex package (todonotes) in both html and pdf rmarkdown documents. For now it only display very simples todonotes but there is a lot to add for later versions.
 
 
 Feel free to participate to this project, it is designed to be open source under a [CECILL-2 Licence](https://github.com/gowachin/todormd/blob/master/LICENCE-CECILL-2.1.txt). Any help in is welcome (see end of README).
@@ -71,15 +69,12 @@ Then in the document you need to add inline code calling the `todo()` function l
 ```
 `r knitr::inline_expr('todo("For example this is a quick note")')` 
 ```
-`r todo("For example this is a quick note")`
 
-<br>
-
-Read [Using {todormd} package](https://gowachin.github.io/todormd/articles/dev_todonotes.html) Vignette to learn more about the function options.
+As github only use markdown syntax, this example is not visible here. However it works on Vignettes : read [Using {todormd} package](https://gowachin.github.io/todormd/articles/dev_todonotes.html) Vignette to learn more about the function options.
 
 
 ## Want to help ?
 
-Go check the [projects](https://github.com/gowachin/todormd/projects) of this repository ! Any help is welcome and I accept all sort of ideas for future project. The idea of this package is to learn about process like desaturation models and turn them into algorithms. If you want to use a specific model, join me and we can try to implement it !
+Go check the [projects](https://github.com/gowachin/todormd/projects) of this repository ! Any help is welcome and I accept all sort of ideas for future project. The idea of this package is to learn about process of rmarkdown knitting and rendering. If you want to use a specific model, join me and we can try to implement it !
 
 Feel free to fork this, and use it. Any recommendation is welcome :)

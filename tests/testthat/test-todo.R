@@ -1,47 +1,65 @@
 
 #### Test todo function ####
 
-# Test for correct input
-rmd_file <- tempfile(fileext = ".Rmd")
-cat("
----
-title: test
----
+library(knitr)
 
-```{r setup}
-library(todormd)
-```
-`r todo('For example this is a quick note')`
-
-`r todo('here I need something more visible so it is red', color='red')`
-
-`r todo('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
-est laborum.', color = 'gray')`
-
-`r todo('this is *italic*, **bold** and ***both***')`
-
-", file = rmd_file )
-html_file <- gsub("\\.Rmd$", ".html", rmd_file )
-pdf_file <- gsub("\\.Rmd$", ".pdf", rmd_file )
-
-
-test_that("html output", {
-  # this test is
-  html <- rmarkdown::render(rmd_file, output_format = "html_document",
-                            output_file = html_file, quiet = TRUE)
-  expect_equal(basename(html), basename(html_file) )
+test_that("no output", {
+  opts_knit$set(rmarkdown.pandoc.to=NULL)
+  expect_equal(todo("hello world"), "hello world" )
 })
 
-# test_that("pdf output", {
-#   # this test is
-#   pdf <- rmarkdown::render(rmd_file, output_format = "pdf_document",
-#                             output_file = pdf_file, quiet = TRUE)
-#   expect_equal(basename(pdf), basename(html_file) )
-# })
+# PDF
+test_that("pdf basic output", {
+  opts_knit$set(rmarkdown.pandoc.to="latex")
+  expect_equal(
+    todo("hello world"),
+    "\\todo[inline,color=orange]{hello world}"
+  )
+})
 
+test_that("pdf red", {
+  opts_knit$set(rmarkdown.pandoc.to="latex")
+  expect_equal(
+    todo("hello world", color = "red"),
+    "\\todo[inline,color=red]{hello world}"
+  )
+})
 
+test_that("pdf bolrd", {
+  opts_knit$set(rmarkdown.pandoc.to="latex")
+  expect_equal(
+    todo("**hello world**", color = "red"),
+    "\\todo[inline,color=red]{\\textbf{hello world}}"
+  )
+})
+
+#HTML
+test_that("html basic output", {
+  opts_knit$set(rmarkdown.pandoc.to="html")
+  expect_equal(
+    todo("hello world"),
+    paste("<div id=\"hello\" style=   \"padding: 2px 2px 2px 2px; ",
+          "border: 2px solid black;   background: orange; ",
+          "border-radius: 10px;\">   <p> hello world </p> </div>")
+  )
+})
+
+test_that("html red", {
+  opts_knit$set(rmarkdown.pandoc.to="html")
+  expect_equal(
+    todo("hello world", color = "red"),
+    paste("<div id=\"hello\" style=   \"padding: 2px 2px 2px 2px; ",
+          "border: 2px solid black;   background: red; ",
+          "border-radius: 10px;\">   <p> hello world </p> </div>")
+  )
+})
+
+test_that("html bold", {
+  opts_knit$set(rmarkdown.pandoc.to="html")
+  expect_equal(
+    todo("**hello world**", color = "red"),
+    paste("<div id=\"hello\" style=   \"padding: 2px 2px 2px 2px; ",
+          "border: 2px solid black;   background: red; ",
+          "border-radius: 10px;\">   <p> **hello world** </p> </div>")
+  )
+})
