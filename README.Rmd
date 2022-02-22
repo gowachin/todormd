@@ -77,4 +77,4 @@ As github only use markdown syntax, this example is not visible here. However it
 
 Go check the [projects](https://github.com/gowachin/todormd/projects) of this repository ! Any help is welcome and I accept all sort of ideas for future project. The idea of this package is to learn about process of rmarkdown knitting and rendering. If you want to use a specific model, join me and we can try to implement it !
 
-Feel free to fork this, and use it. Any recommendation is welcome :)
+Feel free to fork this, and use it. Any recommendation is welcome :) 

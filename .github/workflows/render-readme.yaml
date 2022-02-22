@@ -19,7 +19,7 @@ jobs:
       - name: Install rmarkdown
         run: Rscript -e 'install.packages(c("rmarkdown", "badger"))'
       - name: Install todormd
-        run: Rscript -e 'install.packages(c("remotes")) ; remotes::install_github("gowachin/todormd"", upgrade = "never")'
+        run: Rscript -e 'install.packages(c("remotes")) ; remotes::install_github("gowachin/todormd", upgrade = "never")'
       - name: Render README
         run: Rscript -e 'rmarkdown::render("README.Rmd", output_format = "md_document")'
       - name: Commit results
